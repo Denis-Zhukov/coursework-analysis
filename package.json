@@ -1,0 +1,50 @@
+{
+  "name": "coursework-analysis",
+  "version": "1.0.0",
+  "description": "coursework",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node .",
+    "serve": "tsnd --respawn src/app.ts",
+    "test": "jest --config=jest.unit.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HachikoR/coursework-analysis.git"
+  },
+  "keywords": [
+    "typescript",
+    "javascript",
+    "express"
+  ],
+  "author": "Hachiko <DenisZhukov.Hachiko@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HachikoR/coursework-analysis/issues"
+  },
+  "homepage": "https://github.com/HachikoR/coursework-analysis#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.14",
+    "@types/jest": "^29.1.1",
+    "@types/morgan": "^1.9.3",
+    "@types/node": "^18.7.23",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.1.2",
+    "supertest": "^6.2.4",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.1",
+    "joi": "^17.6.2",
+    "lodash": "^4.17.21",
+    "log4js": "^6.7.0",
+    "mongoose": "^6.6.3",
+    "morgan": "^1.10.0"
+  }
+}
