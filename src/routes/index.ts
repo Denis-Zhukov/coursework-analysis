@@ -1,8 +1,7 @@
 import {Router} from "express";
+import {productsRouter} from "./products.routes";
 
-export const routers = Router();
+const routers = Router();
+routers.use(productsRouter);
 
-
-routers.get("/test", (req, res) => {
-    return res.status(200).send({"title": "Thank you for the all"});
-});
+export default routers;
