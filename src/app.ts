@@ -22,6 +22,7 @@ app.use("/api", routers);
 //@ts-ignore
 app.use((err: any, req, res, next) => {
     logger.error(err);
-    if (err instanceof String && err.startsWith("connect ECONNREFUSED")) return res.status(500).send("Database is not available");
+    if (err instanceof String && err.startsWith("connect ECONNREFUSED"))
+        return res.status(500).send("Database is not available");
     return res.status(500).send(err.message);
 });

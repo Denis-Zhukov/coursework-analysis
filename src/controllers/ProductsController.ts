@@ -1,9 +1,9 @@
 import {Request, Response} from "express";
-import {QueryParam} from "../types/types";
+import {Id, QueryParam} from "../types/types";
 import {validateLimitStart} from "../validations/general.validations";
 import database from "../services";
 import {IProduct} from "../interfaces/IProduct";
-import {validateProduct} from "../validations/products.validations";
+import {validateProduct, validateUpdateProduct} from "../validations/products.validations";
 
 
 export class ProductsController {
@@ -40,5 +40,16 @@ export class ProductsController {
         const result = await database.deleteProduct(id);
         if (result === 0) return res.status(400).send(`${id} has not been found`);
         return res.send(`${id} has been deleted`);
+    }
+
+    public static async updateProduct(req: Request, res: Response) {
+        const product = req.body as IProduct & { oldId: Id | undefined };
+        const {error} = validateUpdateProduct(product);
+        if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
+
+        const result = await database.updateProduct(product, product.oldId);
+        if (result === 0) return res.status(400).send(`Product has not been updated`);
+
+        return res.send(`Product has been updated`);
     }
 }

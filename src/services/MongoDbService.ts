@@ -3,6 +3,7 @@ import {Products} from "../schemas/Products";
 import * as mongoose from "mongoose";
 import {IProduct} from "../interfaces/IProduct";
 import {logger} from "../app";
+import {Id} from "../types/types";
 
 
 export class MongoDbService implements IDatabaseService {
@@ -20,7 +21,7 @@ export class MongoDbService implements IDatabaseService {
     private checkConnections(): void {
         const connected = mongoose.connections.some(c => c.readyState === 1);
         if (!connected) {
-            throw new Error("No one connection have been succeed");
+            throw new Error("No free connections");
         }
     }
 
@@ -40,5 +41,14 @@ export class MongoDbService implements IDatabaseService {
         this.checkConnections();
         const {deletedCount} = await Products.deleteOne({"_id": new mongoose.Types.ObjectId(id)});
         return deletedCount;
+    }
+
+    public async updateProduct(product: IProduct, OldId?: Id | undefined) {
+        this.checkConnections();
+        if (OldId) throw Error("MongoDb does not support to mutate `_id`. Remove field `oldId`");
+        const result = await Products.updateOne({"_id": new mongoose.Types.ObjectId(product._id)}, {
+            name: product.name, description: product.description,
+        });
+        return result;
     }
 }

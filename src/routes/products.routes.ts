@@ -15,3 +15,7 @@ productsRouter.post("/add-product", async (req, res) => {
 productsRouter.delete("/delete-product", async (req, res) => {
     await ProductsController.deleteProduct(req, res);
 });
+
+productsRouter.put("/update-product", async (req, res) => {
+    await ProductsController.updateProduct(req, res);
+});

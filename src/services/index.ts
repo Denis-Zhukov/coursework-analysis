@@ -2,8 +2,6 @@ import {MongoDbService} from "./MongoDbService";
 import {MySqlService} from "./MySqlService";
 import {IDatabaseService} from "./IDatabaseService";
 import * as dotenv from "dotenv";
-import mongoose from "mongoose";
-import {logger} from "../app";
 
 dotenv.config();
 
