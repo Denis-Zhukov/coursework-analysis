@@ -2,10 +2,12 @@ import {MongoDbService} from "./MongoDbService";
 import {MySqlService} from "./MySqlService";
 import {IDatabaseService} from "./IDatabaseService";
 import * as dotenv from "dotenv";
+import mongoose from "mongoose";
+import {logger} from "../app";
 
 dotenv.config();
 
-const databaseType: string = String(process.env?.USE);
+const databaseType: string = String(process.env.USE);
 let database: IDatabaseService;
 switch (databaseType) {
     case "MYSQL":

@@ -1,5 +1,6 @@
 import {IDatabaseService} from "./IDatabaseService";
 import mysql, {RowDataPacket} from "mysql2/promise";
+import {IProduct} from "../interfaces/IProduct";
 
 export class MySqlService implements IDatabaseService {
     private pool: mysql.Pool;
@@ -17,6 +18,25 @@ export class MySqlService implements IDatabaseService {
         const [rows] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
 
         connection.release();
-        return rows;
+        return rows as IProduct[];
+    }
+
+    public async addProduct(product: IProduct) {
+        const connection = await this.pool.getConnection();
+
+        const query = "INSERT INTO `products` (`name`, `description`) VALUES (?, ?)";
+        const [result] = await connection.execute<mysql.OkPacket>(query, [product.name, product.description]);
+
+        connection.release();
+        return result.insertId;
+    }
+
+    public async deleteProduct(id: number) {
+        const connection = await this.pool.getConnection();
+
+        const query = "DELETE FROM products WHERE `products`.`_id` = ?";
+        const [result] = await connection.execute<mysql.OkPacket>(query, [id]);
+
+        return result.affectedRows;
     }
 }
