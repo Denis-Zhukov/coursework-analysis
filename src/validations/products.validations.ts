@@ -1,9 +1,8 @@
-import {IProduct} from "../interfaces/IProduct";
+import {IProduct} from "../models/IProduct";
 import Joi from "joi";
-import {Id} from "../types/types";
 
 
-export const validateProduct = (product: IProduct) => {
+export const validateProductWithOutId = (product: IProduct) => {
     const schema = Joi.object({
         name: Joi.string().required(), description: Joi.string().required(),
     });
@@ -11,10 +10,10 @@ export const validateProduct = (product: IProduct) => {
     return schema.validate(product, {abortEarly: false});
 };
 
-export const validateUpdateProduct = (product: IProduct & { oldId: Id | undefined }) => {
+export const validateProductWithId = (product: IProduct) => {
     const schema = Joi.object({
-        oldId: Joi.alternatives().try(Joi.number(), Joi.string().hex().length(24)).optional(),
-        _id: Joi.alternatives().try(Joi.number().min(1), Joi.string().hex().length(24)).required(),
+        _id: Joi.alternatives()
+            .try(Joi.number().min(1), Joi.string().hex().length(24)).required(),
         name: Joi.string().required(),
         description: Joi.string().required(),
     });

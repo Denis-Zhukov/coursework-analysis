@@ -1,9 +1,10 @@
 import {Request, Response} from "express";
-import {Id, QueryParam} from "../types/types";
+import {QueryParam} from "../types/types";
+import {IProduct} from "../models/IProduct";
+import database from "../services/Databases";
 import {validateLimitStart} from "../validations/general.validations";
-import database from "../services";
-import {IProduct} from "../interfaces/IProduct";
-import {validateProduct, validateUpdateProduct} from "../validations/products.validations";
+import {validateProductWithOutId, validateProductWithId} from "../validations/products.validations";
+import {refineException} from "../exceptions/handler";
 
 
 export class ProductsController {
@@ -18,38 +19,51 @@ export class ProductsController {
         const count = Number(_limit || this.defaultCount);
         const offset = Number(_start || 0);
 
-        const result = await database.getProducts(count, offset);
-
-        return res.send(result);
+        try {
+            const result = await database.getProducts(count, offset);
+            return res.send(result);
+        } catch (e: any) {
+            refineException(e);
+        }
     }
 
     public static async addProduct(req: Request, res: Response) {
         const product = req.body as IProduct;
-        const {error} = validateProduct(product);
+        const {error} = validateProductWithOutId(product);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
 
-        const result = await database.addProduct(req.body);
-
-        return res.status(201).json(result);
+        try {
+            const result = await database.addProduct(req.body);
+            return res.status(201).json(result);
+        } catch (e: any) {
+            refineException(e);
+        }
     }
 
     public static async deleteProduct(req: Request, res: Response) {
         const {id} = req.body;
         if (!id) return res.status(400).send("id is required");
 
-        const result = await database.deleteProduct(id);
-        if (result === 0) return res.status(400).send(`${id} has not been found`);
-        return res.send(`${id} has been deleted`);
+        try {
+            const result = await database.deleteProduct(id);
+            if (result === 0) return res.status(400).send(`${id} has not been found`);
+            return res.send(`${id} has been deleted`);
+        } catch (e: any) {
+            refineException(e);
+        }
     }
 
     public static async updateProduct(req: Request, res: Response) {
-        const product = req.body as IProduct & { oldId: Id | undefined };
-        const {error} = validateUpdateProduct(product);
+        const product = req.body as IProduct;
+        const {error} = validateProductWithId(product);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
 
-        const result = await database.updateProduct(product, product.oldId);
-        if (result === 0) return res.status(400).send(`Product has not been updated`);
-
-        return res.send(`Product has been updated`);
+        try {
+            const result = await database.updateProduct(product);
+            if (result === 0) return res.status(400).send(`Product has not been updated`);
+            return res.send(`Product has been updated`);
+        } catch (e: any) {
+            refineException(e);
+        }
     }
 }
