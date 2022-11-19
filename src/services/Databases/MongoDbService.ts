@@ -1,25 +1,27 @@
-import {IDatabaseService} from "./IDatabaseService";
-import {Products} from "../../schemas/Products";
 import * as mongoose from "mongoose";
-import {IProduct} from "../../models/IProduct";
+import {IDatabaseStatic, IDatabaseInstance} from "./IDatabase";
+import {ICRUD} from "./interfaces/ICRUD";
+import {staticImplement} from "../../decorators/staticImplement";
 
-
-export class MongoDbService implements IDatabaseService {
-    private readonly url: string;
-
+@staticImplement<IDatabaseStatic>()
+export class MongoDbService implements IDatabaseInstance {
+    public readonly url: string;
     private static _instance: MongoDbService;
+    private static tables = new Map<String, ICRUD<any>>();
 
     public static get instance(): MongoDbService {
         return MongoDbService._instance;
     }
 
-    private constructor(connectUrl: string) {
-        this.url = connectUrl;
+    private constructor(connectionUrl: string) {
+        this.url = connectionUrl;
     }
 
-    private async createConnection() {
+    public async getConnection(): Promise<void> {
         await mongoose.connect(this.url, {
-            maxPoolSize: 5, connectTimeoutMS: 2500, serverSelectionTimeoutMS: 5000,
+            maxPoolSize: 5,
+            connectTimeoutMS: 2500,
+            serverSelectionTimeoutMS: 5000,
         });
     }
 
@@ -28,29 +30,17 @@ export class MongoDbService implements IDatabaseService {
         return MongoDbService.instance;
     }
 
-    public async getProducts(count: number, offset: number) {
-        await this.createConnection();
-        const res = await Products.find().skip(offset).limit(count);
-        return res;
+    public static register(key: string, item: ICRUD<any>): void {
+        if (MongoDbService.tables.has(key))
+            throw new Error(`Table with key ${key} already exists`);
+
+        MongoDbService.tables.set(key, item);
     }
 
-    public async addProduct(product: IProduct) {
-        await this.createConnection();
-        const prod = new Products({name: product.name, description: product.description});
-        const result = await prod.save();
-        return result["_id"];
-    }
+    public table(key: string): ICRUD<any> {
+        if (!MongoDbService.tables.has(key))
+            throw new Error(`Table with key ${key} doesn't exist`);
 
-    public async deleteProduct(id: mongoose.Types.ObjectId) {
-        await this.createConnection();
-        const {deletedCount} = await Products.deleteOne({"_id": new mongoose.Types.ObjectId(id)});
-        return deletedCount;
-    }
-
-    public async updateProduct(product: IProduct) {
-        await this.createConnection();
-        return Products.updateOne({"_id": new mongoose.Types.ObjectId(product._id)}, {
-            name: product.name, description: product.description,
-        });
+        return MongoDbService.tables.get(key)!;
     }
 }

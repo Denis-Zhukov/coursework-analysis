@@ -8,6 +8,7 @@ const productsSchema = new Schema({
         required: true,
     },
     description: String,
+    categories: [{type: String}]
 }, {versionKey: false});
 
 export const Products = mongoose.model("Products", productsSchema);

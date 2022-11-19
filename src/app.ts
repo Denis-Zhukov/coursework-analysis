@@ -3,11 +3,10 @@ import "express-async-errors";
 import morgan from "morgan";
 import * as dotenv from "dotenv";
 import log4js from "log4js";
-
-dotenv.config();
-
 import routers from "./routes";
 import {RefinedException} from "./exceptions/handler/RefinedException";
+
+dotenv.config();
 
 export const logger = log4js.getLogger();
 logger.level = process.env?.LOG_LEVEL || "debug";
