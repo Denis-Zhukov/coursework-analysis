@@ -1,3 +1,3 @@
-export enum tableName {
+export enum services {
     product = "Product"
 }

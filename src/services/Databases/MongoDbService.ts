@@ -3,11 +3,12 @@ import {IDatabaseStatic, IDatabaseInstance} from "./IDatabase";
 import {ICRUD} from "./interfaces/ICRUD";
 import {staticImplement} from "../../decorators/staticImplement";
 
+
 @staticImplement<IDatabaseStatic>()
 export class MongoDbService implements IDatabaseInstance {
     public readonly url: string;
     private static _instance: MongoDbService;
-    private static tables = new Map<String, ICRUD<any>>();
+    private static services = new Map<String, ICRUD<any>>();
 
     public static get instance(): MongoDbService {
         return MongoDbService._instance;
@@ -25,22 +26,22 @@ export class MongoDbService implements IDatabaseInstance {
         });
     }
 
+    public getService(key: string): ICRUD<any> {
+        if (!MongoDbService.services.has(key))
+            throw new Error(`Service with key ${key} doesn't exist`);
+
+        return MongoDbService.services.get(key)!;
+    }
+
+    public static registerService(key: string, item: ICRUD<any>): void {
+        if (MongoDbService.services.has(key))
+            throw new Error(`Service with key ${key} already exists`);
+
+        MongoDbService.services.set(key, item);
+    }
+
     public static createInstance(connectUrl: string): MongoDbService {
         MongoDbService._instance = new MongoDbService(connectUrl);
         return MongoDbService.instance;
-    }
-
-    public static register(key: string, item: ICRUD<any>): void {
-        if (MongoDbService.tables.has(key))
-            throw new Error(`Table with key ${key} already exists`);
-
-        MongoDbService.tables.set(key, item);
-    }
-
-    public table(key: string): ICRUD<any> {
-        if (!MongoDbService.tables.has(key))
-            throw new Error(`Table with key ${key} doesn't exist`);
-
-        return MongoDbService.tables.get(key)!;
     }
 }

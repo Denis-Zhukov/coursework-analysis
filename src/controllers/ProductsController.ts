@@ -5,7 +5,7 @@ import database from "../services/Databases";
 import {validateLimitStart} from "../validations/general.validations";
 import {validateProductWithId, validateProductWithOutId} from "../validations/products.validations";
 import {refineException} from "../exceptions/handler";
-import {tableName} from "../services/Databases/tableName";
+import {services} from "../services/Databases/tableName";
 
 
 export class ProductsController {
@@ -21,7 +21,7 @@ export class ProductsController {
         const offset = Number(_start || 0);
 
         try {
-            const result = await database.table(tableName.product).get(count, offset);
+            const result = await database.getService(services.product).get(count, offset);
             return res.send(result);
         } catch (e: any) {
             refineException(e);
@@ -34,7 +34,7 @@ export class ProductsController {
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
 
         try {
-            const result = await database.table(tableName.product).add(product);
+            const result = await database.getService(services.product).add(product);
             return res.status(201).json(result);
         } catch (e: any) {
             refineException(e);
@@ -46,7 +46,7 @@ export class ProductsController {
         if (!id) return res.status(400).send("id is required");
 
         try {
-            const result = await database.table(tableName.product).delete(id);
+            const result = await database.getService(services.product).delete(id);
             if (result === 0) return res.status(400).send(`${id} has not been found`);
             return res.send(`${id} has been deleted`);
         } catch (e: any) {
@@ -60,7 +60,7 @@ export class ProductsController {
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
 
         try {
-            const result = await database.table(tableName.product).update(product);
+            const result = await database.getService(services.product).update(product);
             if (result === 0) return res.status(400).send(`Product has not been updated`);
             return res.send(`Product has been updated`);
         } catch (e: any) {

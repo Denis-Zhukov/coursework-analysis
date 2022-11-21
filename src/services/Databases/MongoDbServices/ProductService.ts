@@ -1,11 +1,9 @@
-import mysql, {RowDataPacket} from "mysql2/promise";
 import {IProduct} from "../../../models/IProduct";
-import {MySqlService} from "../MySqlService";
 import {ICRUD} from "../interfaces/ICRUD";
 import {Products} from "../../../schemas/Products";
 import mongoose from "mongoose";
 import {MongoDbService} from "../MongoDbService";
-import {tableName} from "../tableName";
+import {services} from "../services";
 
 export class ProductService implements ICRUD<IProduct> {
     private instance: MongoDbService;
@@ -40,4 +38,4 @@ export class ProductService implements ICRUD<IProduct> {
     }
 }
 
-MongoDbService.register(tableName.product, new ProductService());
+MongoDbService.registerService(services.product, new ProductService());
