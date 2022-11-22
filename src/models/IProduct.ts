@@ -1,7 +1,7 @@
 import {Id} from "../types/types";
 
 export interface IProduct {
-    _id: Id;
+    id: Id;
     name: string;
     description: string;
     categories: string[]

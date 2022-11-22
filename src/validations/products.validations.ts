@@ -1,5 +1,9 @@
 import {IProduct} from "../models/IProduct";
 import Joi from "joi";
+import {schemaId} from "./general.validations";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 export const validateProductWithOutId = (product: IProduct) => {
     const schema = Joi.object({
@@ -13,8 +17,7 @@ export const validateProductWithOutId = (product: IProduct) => {
 
 export const validateProductWithId = (product: IProduct) => {
     const schema = Joi.object({
-        _id: Joi.alternatives()
-            .try(Joi.number().min(1), Joi.string().hex().length(24)).required(),
+        id: Joi.alternatives().try(schemaId).required(),
         name: Joi.string().required(),
         description: Joi.string().required(),
         categories: Joi.array().items(Joi.string()).min(1).required()

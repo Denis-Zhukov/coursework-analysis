@@ -3,6 +3,7 @@ import {IProduct} from "../../../models/IProduct";
 import {MySqlService} from "../MySqlService";
 import {ICRUD} from "../interfaces/ICRUD";
 import {services} from "../services";
+import {Id} from "../../../types/types";
 
 
 export class ProductService implements ICRUD<IProduct> {
@@ -10,6 +11,26 @@ export class ProductService implements ICRUD<IProduct> {
 
     constructor() {
         this.pool = MySqlService.instance.pool;
+    }
+
+    private async addCategories(connection: mysql.PoolConnection, product: IProduct): Promise<void> {
+        let query = "INSERT IGNORE INTO `categories` (`name`) VALUES ";
+        query += product.categories.map(() => "(?)").join(", ");
+        await connection.execute<mysql.OkPacket>(query, product.categories);
+    }
+
+    private async getIdsCategories(connection: mysql.PoolConnection, product: IProduct): Promise<Id[]> {
+        let query = "SELECT id FROM `categories` WHERE categories.name IN (";
+        query += product.categories.map(() => "?").join(", ") + ")";
+        const [idsObject] = await connection.execute<RowDataPacket[]>(query, product.categories);
+        return idsObject.map(idObject => idObject.id);
+    }
+
+    private async bindProductAndCategories(connection: mysql.PoolConnection, product: IProduct, idProduct: Id, ids: Id[]): Promise<void> {
+        let query = "INSERT INTO `product_categories` (`id_product`, `id_category`) VALUES "
+        query += product.categories.map(() => "(?,?)").join(", ");
+        const values = ids.map(id => [idProduct, id]).flat();
+        await connection.execute<mysql.OkPacket>(query, values);
     }
 
     public async add(product: IProduct) {
@@ -20,26 +41,18 @@ export class ProductService implements ICRUD<IProduct> {
 
         try {
             //add all categories from product to table categories
-            let query = "INSERT IGNORE INTO `categories` (`name`) VALUES ";
-            query += product.categories.map(() => "(?)").join(", ");
-            await connection.execute<mysql.OkPacket>(query, product.categories);
+            await this.addCategories(connection, product);
 
             //add product info to table products
-            query = "INSERT INTO `products` (`name`, `description`) VALUES (?, ?)";
+            let query = "INSERT INTO `products` (`name`, `description`) VALUES (?, ?)";
             const [result] = await connection.execute<mysql.OkPacket>(query, [product.name, product.description]);
             const idProduct = result.insertId;
 
             //get ids by current categories
-            query = "SELECT id FROM `categories` WHERE categories.name IN (";
-            query += product.categories.map(() => "?").join(", ") + ")";
-            const [idsObject] = await connection.execute<RowDataPacket[]>(query, product.categories);
-            const ids: number[] = idsObject.map(idObject => idObject.id);
+            const ids: Id[] = await this.getIdsCategories(connection, product);
 
             //bind categories and product
-            query = "INSERT INTO `product_categories` (`id_product`, `id_category`) VALUES "
-            query += product.categories.map(() => "(?,?)").join(", ");
-            const values = ids.map(id=>[idProduct, id]).flat();
-            await connection.execute<mysql.OkPacket>(query, values);
+            await this.bindProductAndCategories(connection, product, idProduct, ids);
 
             await connection.commit();
 
@@ -56,9 +69,9 @@ export class ProductService implements ICRUD<IProduct> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM products LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `products_info` LIMIT ? OFFSET ?";
             const [rows] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
-            return rows as IProduct[];
+            return rows.map(prod => ({...prod, categories: prod.categories.split(';')}));
         } finally {
             connection.release();
         }
@@ -72,25 +85,24 @@ export class ProductService implements ICRUD<IProduct> {
 
         try {
             //add all categories from product to table categories
-            let query = "INSERT IGNORE INTO `categories` (`name`) VALUES ";
-            query += product.categories.map(() => "(?)").join(", ");
-            await connection.execute<mysql.OkPacket>(query, product.categories);
+            await this.addCategories(connection, product);
 
             //get ids by current categories
-            query = "SELECT id FROM `categories` WHERE categories.name IN (";
-            query += product.categories.map(() => "?").join(", ") + ")";
-            const [idsObject] = await connection.execute<RowDataPacket[]>(query, product.categories);
-            const ids: number[] = idsObject.map(idObject => idObject.id);
+            const ids: Id[] = await this.getIdsCategories(connection, product);
+
+            //delete old bindings
+            let query = "DELETE FROM `product_categories` WHERE id_product = ?";
+            await connection.execute<mysql.OkPacket>(query, [product.id]);
 
             //bind categories and product
-            query = "INSERT INTO `product_categories` (`id_product`, `id_category`) VALUES "
-            query += product.categories.map(() => "(?,?)").join(", ");
-            const values = ids.map(id=>[product._id, id]).flat();
-            await connection.execute<mysql.OkPacket>(query, values);
+            await this.bindProductAndCategories(connection, product, product.id, ids);
 
+            //Update product info
+            query = "UPDATE `products` SET `name` = ?, `description` = ? WHERE `products`.`id` = ?";
+            const [result] = await connection.execute<mysql.OkPacket>(query, [product.name, product.description, product.id]);
 
-            query = "UPDATE `products` SET `name` = ?, `description` = ? WHERE `products`.`_id` = ?";
-            const [result] = await connection.execute<mysql.OkPacket>(query, [product.name, product.description, product._id]);
+            await connection.commit();
+
             return result.affectedRows;
         } catch (e: any) {
             await connection.rollback();
@@ -104,7 +116,7 @@ export class ProductService implements ICRUD<IProduct> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "DELETE FROM products WHERE `products`.`_id` = ?";
+            const query = "DELETE FROM products WHERE `products`.`id` = ?";
             const [result] = await connection.execute<mysql.OkPacket>(query, [id]);
             return result.affectedRows;
         } finally {

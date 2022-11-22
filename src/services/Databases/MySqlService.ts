@@ -1,6 +1,5 @@
 import mysql from "mysql2/promise";
-import {logger} from "../../app";
-import {IDatabaseStatic, IDatabaseInstance} from "./IDatabase";
+import {IDatabaseInstance, IDatabaseStatic} from "./IDatabase";
 import {ICRUD} from "./interfaces/ICRUD";
 import {staticImplement} from "../../decorators/staticImplement";
 
@@ -40,7 +39,7 @@ export class MySqlService implements IDatabaseInstance {
 
     public static createInstance(host: string, port: number, user: string, database: string): MySqlService {
         if(MySqlService.instance)
-            MySqlService.instance.pool.end().then(() => logger.info("MySql pool has been destroyed"));
+            MySqlService.instance.pool.end().then(() => console.log("MySql pool has been destroyed"));
         MySqlService._instance = new MySqlService(host, port, user, database);
         return MySqlService.instance;
     }

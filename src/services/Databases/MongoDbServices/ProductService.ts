@@ -1,6 +1,6 @@
 import {IProduct} from "../../../models/IProduct";
 import {ICRUD} from "../interfaces/ICRUD";
-import {Products} from "../../../schemas/Products";
+import {Products} from "./schemas/Products";
 import mongoose from "mongoose";
 import {MongoDbService} from "../MongoDbService";
 import {services} from "../services";
@@ -14,7 +14,11 @@ export class ProductService implements ICRUD<IProduct> {
 
     public async add(product: IProduct) {
         await this.instance.getConnection();
-        const prod = new Products({name: product.name, description: product.description});
+        const prod = new Products({
+            name: product.name,
+            description: product.description,
+            categories: product.categories
+        });
         const result = await prod.save();
         return result["_id"];
     }
@@ -26,9 +30,12 @@ export class ProductService implements ICRUD<IProduct> {
 
     public async update(product: IProduct) {
         await this.instance.getConnection();
-        return Products.updateOne({"_id": new mongoose.Types.ObjectId(product._id)}, {
-            name: product.name, description: product.description,
+        const result = await Products.updateOne({"_id": new mongoose.Types.ObjectId(product.id)}, {
+            name: product.name,
+            description: product.description,
+            categories: product.categories
         });
+        return result.matchedCount;
     }
 
     public async delete(id: mongoose.Types.ObjectId) {
