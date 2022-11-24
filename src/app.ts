@@ -25,5 +25,5 @@ app.use((err: RefinedException, req, res, next) => {
 status:${err.status}
 defined message:${err.message}
 `, err.realException);
-    return res.status(err.status).send(err.message);
+    return res.status(err.status).send(err?.message || "Unknown error");
 });

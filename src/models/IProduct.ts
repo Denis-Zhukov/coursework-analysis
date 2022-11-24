@@ -4,5 +4,5 @@ export interface IProduct {
     id: Id;
     name: string;
     description: string;
-    categories: string[]
+    categories: string[];
 }

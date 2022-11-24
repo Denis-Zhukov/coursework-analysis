@@ -7,8 +7,6 @@ const schema = new Schema({
         type: String,
         required: true,
     },
-    description: String,
-    categories: [{type: Schema.Types.ObjectId, ref: "Categories"}]
 }, {versionKey: false});
 
-export const Products = mongoose.model("Products", schema, "products");
+export const Categories = mongoose.model("Categories", schema, "categories");

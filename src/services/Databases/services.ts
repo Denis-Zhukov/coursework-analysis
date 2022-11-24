@@ -1,3 +1,4 @@
 export enum services {
-    product = "Product"
+    product = "Products",
+    category = "Categories",
 }

@@ -1,6 +1,6 @@
 import {IProduct} from "../models/IProduct";
 import Joi from "joi";
-import {schemaId} from "./general.validations";
+import {schemaId} from "./validationSchemas";
 import * as dotenv from "dotenv";
 
 dotenv.config();
