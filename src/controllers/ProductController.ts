@@ -14,9 +14,10 @@ export class ProductController {
     private static maxCount: number = 50;
 
     public static async addProduct(req: Request, res: Response) {
-        const product = req.body as IProduct;
+        let product = req.body as IProduct;
         const {error} = validateProductWithOutId(product);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
+        product = {...product, categories: product.categories.map(c => c.toLowerCase())};
 
         try {
             const result = await database.getService(services.product).add(product);
@@ -43,14 +44,15 @@ export class ProductController {
     }
 
     public static async updateProduct(req: Request, res: Response) {
-        const product = req.body as IProduct;
+        let product = req.body as IProduct;
         const {error} = validateProductWithId(product);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
+        product = {...product, categories: product.categories.map(c => c.toLowerCase())};
 
         try {
             const result = await database.getService(services.product).update(product);
             if (result === 0) return res.status(400).send(`${product.id} has not been found`);
-            return res.send(`Category has been updated`);
+            return res.send(`Product has been updated`);
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));
         }

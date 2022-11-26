@@ -46,9 +46,8 @@ export class ProductService implements ICRUD<IProduct> {
 
             //get ids by current categories
             const [ids, excludedCategories] = await this.getIdsCategories(connection, product);
-            if (excludedCategories) {
+            if (excludedCategories)
                 throw new RefinedException(`Categories: ${excludedCategories.map(c => `'${c}'`).join(', ')} don't exist`, 400);
-            }
 
             //bind categories and product
             await this.bindProductAndCategories(connection, product, idProduct, ids);
@@ -84,9 +83,8 @@ export class ProductService implements ICRUD<IProduct> {
         try {
             //get ids by current categories
             const [ids, excludedCategories] = await this.getIdsCategories(connection, product);
-            if (excludedCategories) {
+            if (excludedCategories)
                 throw new RefinedException(`Categories: ${excludedCategories.map(c => `'${c}'`).join(', ')} don't exist`, 400);
-            }
 
             //delete old bindings
             let query = "DELETE FROM `product_categories` WHERE id_product = ?";
@@ -100,7 +98,7 @@ export class ProductService implements ICRUD<IProduct> {
             const [result] = await connection.execute<mysql.OkPacket>(query, [product.name, product.description, product.id]);
 
             await connection.commit();
-
+            
             return result.affectedRows;
         } catch (e: any) {
             await connection.rollback();
@@ -114,7 +112,11 @@ export class ProductService implements ICRUD<IProduct> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "DELETE FROM products WHERE `products`.`id` = ?";
+            //NOTE: replaced by trigger: BEFORE DELETE in products
+            //let query = "DELETE FROM `product_categories` WHERE `id_product` = ?";
+            //await connection.execute<mysql.OkPacket>(query, [id]);
+
+            let query = "DELETE FROM products WHERE `products`.`id` = ?";
             const [result] = await connection.execute<mysql.OkPacket>(query, [id]);
             return result.affectedRows;
         } finally {

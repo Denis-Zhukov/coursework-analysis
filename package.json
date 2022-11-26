@@ -31,6 +31,7 @@
     "@types/jest": "^29.1.1",
     "@types/morgan": "^1.9.3",
     "@types/node": "^18.7.23",
+    "@types/nodemailer": "^6.4.6",
     "@types/supertest": "^2.0.12",
     "jest": "^29.1.2",
     "nodemon": "^2.0.20",
@@ -49,6 +50,7 @@
     "log4js": "^6.7.0",
     "mongoose": "^6.6.3",
     "morgan": "^1.10.0",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "nodemailer": "^6.8.0"
   }
 }

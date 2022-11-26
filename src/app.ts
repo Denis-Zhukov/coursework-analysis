@@ -21,9 +21,10 @@ app.use("/api", routers);
 
 //@ts-ignore
 app.use((err: RefinedException, req, res, next) => {
-    logger.error(`message: ${err.realException?.message}
-status:${err.status}
-defined message:${err.message}
-`, err.realException);
-    return res.status(err.status).send(err?.message || "Unknown error");
+    logger.error(`ERROR
+    message: ${err.realException?.message ?? "-"}
+    status: ${err.status}
+    defined message: ${err.message}
+    `, err.realException || "");
+    return res.status(err.status || 500).send(err?.message || "Unknown error");
 });

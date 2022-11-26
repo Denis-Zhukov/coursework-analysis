@@ -1,11 +1,11 @@
 import {Id} from "../../../types/types";
 
 export interface ICRUD<T> {
-    add(product: T): any;
+    add(item: T): any;
 
     get(count: number, offset: number): any;
 
-    update(product: T): any;
+    update(item: T): any;
 
     delete(id: Id): any;
 }

@@ -14,9 +14,10 @@ export class CategoryController {
     private static maxCount: number = 50;
 
     public static async addCategory(req: Request, res: Response) {
-        const category = req.body as ICategory;
+        let category = req.body as ICategory;
         const {error} = validateCategoryWithOutId(category);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
+        category.name = category.name.toLowerCase();
 
         try {
             const result = await database.getService(services.category).add(category);
@@ -46,11 +47,12 @@ export class CategoryController {
         const category = req.body as ICategory;
         const {error} = validateCategoryWithId(category);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
+        category.name = category.name.toLowerCase();
 
         try {
             const result = await database.getService(services.category).update(category);
             if (result === 0) return res.status(400).send(`${category.id} has not been found`);
-            return res.send(`Product has been updated`);
+            return res.send(`Category has been updated`);
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));
         }
