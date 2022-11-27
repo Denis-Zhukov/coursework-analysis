@@ -1,13 +1,12 @@
 import Joi from "joi";
 import {schemaId} from "./validationSchemas";
-import * as dotenv from "dotenv";
 import {ICategory} from "../models/ICategory";
+import {category as s} from "./settings";
 
-dotenv.config();
 
 export const validateCategoryWithOutId = (category: ICategory) => {
     const schema = Joi.object({
-        name: Joi.string().required(),
+        name: Joi.string().min(s.varchar.minLength).max(s.varchar.maxLength).required(),
     });
 
     return schema.validate(category, {abortEarly: false});
@@ -16,7 +15,7 @@ export const validateCategoryWithOutId = (category: ICategory) => {
 export const validateCategoryWithId = (category: ICategory) => {
     const schema = Joi.object({
         id: Joi.alternatives().try(schemaId).required(),
-        name: Joi.string().required(),
+        name: Joi.string().min(s.varchar.minLength).max(s.varchar.maxLength).required(),
     });
 
     return schema.validate(category, {abortEarly: false});

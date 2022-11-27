@@ -23,7 +23,7 @@ export class CategoryController {
             const result = await database.getService(services.category).add(category);
             return res.status(201).json(result);
         } catch (e: any) {
-            throw refineException(e);
+            throw (e instanceof RefinedException ? e : refineException(e));
         }
     }
 

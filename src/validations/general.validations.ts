@@ -1,11 +1,12 @@
 import Joi from "joi";
 import {Id} from "../types/types";
 import {schemaId} from "./validationSchemas";
+import {general} from "./settings";
 
-export const validateLimitStart = (data: any, maxLimit: number = Number.MAX_SAFE_INTEGER) => {
+
+export const validateLimitStart = (data: any, maxLimit: number = general.limit.maxDefault) => {
     const schema = Joi.object({
-        _limit: Joi.number().min(1).max(maxLimit),
-        _start: Joi.number().min(0),
+        _limit: Joi.number().min(general.limit.min).max(maxLimit), _start: Joi.number().min(0),
     });
 
     return schema.validate(data, {abortEarly: false});
@@ -13,9 +14,8 @@ export const validateLimitStart = (data: any, maxLimit: number = Number.MAX_SAFE
 
 export const validateId = (id: Id) => {
     const schema = Joi.object({
-            id: Joi.alternatives().try(schemaId).required()
-        }
-    )
+        id: Joi.alternatives().try(schemaId).required(),
+    });
 
     return schema.validate({id}, {abortEarly: false});
-}
+};

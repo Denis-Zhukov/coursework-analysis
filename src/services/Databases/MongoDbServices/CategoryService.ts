@@ -4,6 +4,7 @@ import {MongoDbService} from "../MongoDbService";
 import {services} from "../services";
 import {ICategory} from "../../../models/ICategory";
 import {Categories} from "./schemas/Categories";
+import {RefinedException} from "../../../exceptions/handler/RefinedException";
 
 
 export class CategoryService implements ICRUD<ICategory> {
@@ -15,8 +16,12 @@ export class CategoryService implements ICRUD<ICategory> {
 
     public async add(category: ICategory) {
         await this.instance.getConnection();
+
+        const checkCategory = await Categories.find({name: category.name});
+        if (checkCategory.length) throw new RefinedException(`Category '${category.name}' already exist`, 400);
+
         const newCategory = new Categories({
-            name: category.name
+            name: category.name,
         });
         const result = await newCategory.save();
         return result["_id"];
