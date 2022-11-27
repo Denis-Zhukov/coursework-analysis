@@ -2,9 +2,7 @@ import mysql, {RowDataPacket} from "mysql2/promise";
 import {MySqlService} from "../MySqlService";
 import {ICRUD} from "../interfaces/ICRUD";
 import {services} from "../services";
-import {Id} from "../../../types/types";
 import {ICategory} from "../../../models/ICategory";
-import {RefinedException} from "../../../exceptions/handler/RefinedException";
 
 
 export class CategoryService implements ICRUD<ICategory> {
@@ -18,7 +16,7 @@ export class CategoryService implements ICRUD<ICategory> {
         const connection = await this.pool.getConnection();
 
         try {
-            let query = "INSERT INTO `categories`(`name`) VALUES (?)";
+            let query = "INSERT INTO `categories` (`name`) VALUES (?)";
             const [result] = await connection.execute<mysql.OkPacket>(query, [category.name]);
 
             return result.insertId;

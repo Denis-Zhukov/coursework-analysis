@@ -27,6 +27,10 @@ export const client = {
     text: {
         minLength: 1, maxLength: 1000,
     },
+
+    contactDetails: {
+        minLength: 1, maxLength: 500,
+    },
 };
 
 export const category = {
@@ -40,7 +44,7 @@ export const product = {
         minLength: 1, maxLength: 3000,
     },
 
-    categories:{
+    categories: {
         minElements: 1, maxElements: 10,
     },
 
