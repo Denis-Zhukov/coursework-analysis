@@ -1,7 +1,6 @@
 import {Router} from "express";
 import {AccountController} from "../controllers/AccountController";
 
-
 export const accountRouter = Router();
 
 accountRouter.post("/add-account", async (req, res) => {

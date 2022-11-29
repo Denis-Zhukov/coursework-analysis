@@ -1,49 +1,47 @@
 import {ICRUD} from "../interfaces/ICRUD";
 import mongoose from "mongoose";
 import {MongoDbService} from "../MongoDbService";
-import {services} from "../services";
-import {ICategory} from "../../../models/ICategory";
-import {Categories} from "./schemas/Categories";
+import {services} from "../services"
+import {Accounts} from "./schemas/Accounts";
 import {RefinedException} from "../../../exceptions/handler/RefinedException";
+import {IAccount} from "../../../models/IAccount";
+import {Products} from "./schemas/Products";
 
 
-export class AccountService implements ICRUD<ICategory> {
+export class AccountService implements ICRUD<IAccount> {
     private instance: MongoDbService;
 
     constructor() {
         this.instance = MongoDbService.instance;
     }
 
-    public async add(category: ICategory) {
+    public async add(acc: IAccount) {
         await this.instance.getConnection();
 
-        const checkCategory = await Categories.find({name: category.name});
-        if (checkCategory.length) throw new RefinedException(`Category '${category.name}' already exist`, 400);
-
-        const newCategory = new Categories({
-            name: category.name,
-        });
-        const result = await newCategory.save();
+        const newAcc = new Accounts({...acc});
+        const result = await newAcc.save();
         return result["_id"];
     }
 
     public async get(count: number, offset: number) {
         await this.instance.getConnection();
-        return Categories.find().skip(offset).limit(count);
+        return Accounts.find().skip(offset).limit(count);
     }
 
-    public async update(category: ICategory) {
+    public async update(acc: IAccount) {
         await this.instance.getConnection();
 
-        const result = await Categories.updateOne({"_id": new mongoose.Types.ObjectId(category.id)}, {
-            name: category.name,
+        const result = await Products.updateOne({"_id": new mongoose.Types.ObjectId(acc.id)}, {
+            username: acc.username,
+            email: acc.email,
+            contactDetails: acc.contactDetails
         });
         return result.matchedCount;
     }
 
     public async delete(id: mongoose.Types.ObjectId) {
         await this.instance.getConnection();
-        const {deletedCount} = await Categories.deleteOne({"_id": new mongoose.Types.ObjectId(id)});
+        const {deletedCount} = await Accounts.deleteOne({"_id": new mongoose.Types.ObjectId(id)});
         return deletedCount;
     }
 }

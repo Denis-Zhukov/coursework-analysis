@@ -3,22 +3,22 @@ import {MySqlService} from "../MySqlService";
 import {ICRUD} from "../interfaces/ICRUD";
 import {services} from "../services";
 import {ICategory} from "../../../models/ICategory";
+import {IAccount} from "../../../models/IAccount";
 
 
-export class AccountService implements ICRUD<ICategory> {
+export class AccountService implements ICRUD<IAccount> {
     private pool: mysql.Pool;
 
     constructor() {
         this.pool = MySqlService.instance.pool;
     }
 
-    public async add(category: ICategory) {
+    public async add(acc: IAccount) {
         const connection = await this.pool.getConnection();
 
         try {
-            let query = "INSERT INTO `categories` (`name`) VALUES (?)";
-            const [result] = await connection.execute<mysql.OkPacket>(query, [category.name]);
-
+            let query = "INSERT INTO `accounts`(`email`, `username`, `password_hash`, `contact_details`) VALUES (?,?,?,?)";
+            const [result] = await connection.execute<mysql.OkPacket>(query, [acc.email, acc.username, acc.passwordHash, acc.contactDetails]);
             return result.insertId;
         } finally {
             connection.release();
@@ -29,7 +29,7 @@ export class AccountService implements ICRUD<ICategory> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM `categories` LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `accounts` LIMIT ? OFFSET ?";
             const [categories] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
             return categories;
         } finally {
@@ -37,13 +37,13 @@ export class AccountService implements ICRUD<ICategory> {
         }
     }
 
-    public async update(category: ICategory) {
+    public async update(acc: IAccount) {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "UPDATE `categories` SET `name`=? WHERE `categories`.id = ?";
-            const [result] = await connection.execute<mysql.OkPacket>(query, [category.name, category.id]);
+            const query = 'UPDATE `accounts` SET `email`=?,`username`=?,`contact_details`=? WHERE id=?';
 
+            const [result] = await connection.execute<mysql.OkPacket>(query, [acc.email, acc.username, acc.contactDetails, acc.id]);
             return result.affectedRows;
         } finally {
             connection.release();
@@ -54,7 +54,7 @@ export class AccountService implements ICRUD<ICategory> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "DELETE FROM `categories` WHERE `categories`.`id` = ?";
+            const query = "DELETE FROM `accounts` WHERE `accounts`.`id` = ?";
             const [result] = await connection.execute<mysql.OkPacket>(query, [id]);
             return result.affectedRows;
         } finally {

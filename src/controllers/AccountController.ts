@@ -6,6 +6,8 @@ import {IAccount} from "../models/IAccount";
 import {validateId, validateLimitStart} from "../validations/general.validations";
 import {refineException} from "../exceptions/handler";
 import {RefinedException} from "../exceptions/handler/RefinedException";
+import {validateAccountWithId, validateAccountWithoutId} from "../validations/account.validations";
+import {Security} from "../services/Security";
 
 
 export class AccountController {
@@ -13,12 +15,13 @@ export class AccountController {
     private static maxCount: number = 50;
 
     public static async addAccount(req: Request, res: Response) {
-        let category = req.body as IAccount;
-        const {error} = {error:{details:[{message:""}]}};
+        let acc = req.body as IAccount;
+        const {error} = validateAccountWithoutId(acc);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
 
         try {
-            const result = await database.getService(services.account).add(category);
+            acc.passwordHash = await Security.hashPassword(acc.password);
+            const result = await database.getService(services.account).add(acc);
             return res.status(201).json(result);
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));
@@ -42,13 +45,13 @@ export class AccountController {
     }
 
     public static async updateAccount(req: Request, res: Response) {
-        const category = req.body as IAccount;
-        const {error} = {error:{details:[{message:""}]}};
+        const acc = req.body as IAccount;
+        const {error} = validateAccountWithId(acc);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
 
         try {
-            const result = await database.getService(services.account).update(category);
-            if (result === 0) return res.status(400).send(`${category.id} has not been found`);
+            const result = await database.getService(services.account).update(acc);
+            if (result === 0) return res.status(400).send(`${acc.id} has not been found`);
             return res.send(`Account has been updated`);
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));
@@ -56,7 +59,7 @@ export class AccountController {
     }
 
     public static async deleteAccount(req: Request, res: Response) {
-        const id = (req.params as unknown) as Id;
+        const id = (req.params.id as unknown) as Id;
         const {error} = validateId(id);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
 

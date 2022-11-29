@@ -19,12 +19,22 @@ export class RegistrationRequestsService implements IRegistrationRequests {
 
         try {
             let query = "SELECT email, username FROM registration_requests WHERE email=? OR username=?";
-            const [rows] = await connection.execute<mysql.RowDataPacket[]>(query, [data.email, data.username]);
+            const [regReqs] = await connection.execute<mysql.RowDataPacket[]>(query, [data.email, data.username]);
 
-            if (rows.length) {
+            query = "SELECT email, username FROM `accounts` WHERE email=? OR username=?";
+            const [accs] = await connection.execute<mysql.RowDataPacket[]>(query, [data.email, data.username]);
+
+            if (regReqs.length) {
                 let err = "";
-                rows[0].email === data.email && (err += `There is already a user with email ${data.email}\n`);
-                rows[0].username === data.username && (err += `There is already a user with username ${data.username}`);
+                regReqs[0].email === data.email && (err += `There is already a request with email ${data.email}\n`);
+                regReqs[0].username === data.username && (err += `There is already a request with username ${data.username}`);
+                throw new RefinedException(err, 400);
+            }
+
+            if (regReqs.length) {
+                let err = "";
+                accs[0].email === data.email && (err += `There is already a user with email ${data.email}\n`);
+                accs[0].username === data.username && (err += `There is already a user with username ${data.username}`);
                 throw new RefinedException(err, 400);
             }
 
