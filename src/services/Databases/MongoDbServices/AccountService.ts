@@ -5,10 +5,9 @@ import {services} from "../services";
 import {ICategory} from "../../../models/ICategory";
 import {Categories} from "./schemas/Categories";
 import {RefinedException} from "../../../exceptions/handler/RefinedException";
-import {Products} from "./schemas/Products";
 
 
-export class CategoryService implements ICRUD<ICategory> {
+export class AccountService implements ICRUD<ICategory> {
     private instance: MongoDbService;
 
     constructor() {
@@ -45,12 +44,8 @@ export class CategoryService implements ICRUD<ICategory> {
     public async delete(id: mongoose.Types.ObjectId) {
         await this.instance.getConnection();
         const {deletedCount} = await Categories.deleteOne({"_id": new mongoose.Types.ObjectId(id)});
-        await Products.update({},
-            {$pull: {'categories': id}}
-        );
-
         return deletedCount;
     }
 }
 
-MongoDbService.registerService(services.category, new CategoryService());
+MongoDbService.registerService(services.account, new AccountService());

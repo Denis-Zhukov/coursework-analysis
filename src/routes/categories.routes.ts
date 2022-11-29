@@ -16,6 +16,6 @@ categoryRouter.put("/update-category", async (req, res) => {
     await CategoryController.updateCategory(req, res);
 });
 
-categoryRouter.delete("/delete-category", async (req, res) => {
+categoryRouter.delete("/delete-category/:id", async (req, res) => {
     await CategoryController.deleteCategory(req, res);
 });

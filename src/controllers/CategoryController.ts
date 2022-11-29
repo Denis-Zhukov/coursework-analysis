@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {QueryParam} from "../types/types";
+import {Id, QueryParam} from "../types/types";
 import database from "../services/Databases";
 import {services} from "../services/Databases/services";
 import {ICategory} from "../models/ICategory";
@@ -59,7 +59,7 @@ export class CategoryController {
     }
 
     public static async deleteCategory(req: Request, res: Response) {
-        const {id} = req.body;
+        const id = (req.params.id as unknown) as Id;
         const {error} = validateId(id);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
 
