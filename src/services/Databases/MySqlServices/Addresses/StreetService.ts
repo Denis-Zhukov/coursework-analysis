@@ -1,23 +1,24 @@
 import mysql, {RowDataPacket} from "mysql2/promise";
-import {MySqlService} from "../MySqlService";
-import {ICRUD} from "../interfaces/ICRUD";
-import {services} from "../services";
-import {IAccount} from "../../../models/IAccount";
+import {MySqlService} from "../../MySqlService";
+import {ICRUD} from "../../interfaces/ICRUD";
+import {services} from "../../services";
+import {ICountry} from "../../../../models/Addresses/ICountry";
+import {IStreet} from "../../../../models/Addresses/IStreet";
 
 
-export class AccountService implements ICRUD<IAccount> {
+export class StreetService implements ICRUD<ICountry> {
     private pool: mysql.Pool;
 
     constructor() {
         this.pool = MySqlService.instance.pool;
     }
 
-    public async add(acc: IAccount) {
+    public async add(city: IStreet) {
         const connection = await this.pool.getConnection();
 
         try {
-            let query = "INSERT INTO `accounts`(`email`, `username`, `password_hash`, `contact_details`) VALUES (?,?,?,?)";
-            const [result] = await connection.execute<mysql.OkPacket>(query, [acc.email, acc.username, acc.passwordHash, acc.contactDetails]);
+            let query = "INSERT INTO `streets` (`name`, `id_city`) VALUES (?,?)";
+            const [result] = await connection.execute<mysql.OkPacket>(query, [city.name, city.idCity]);
             return result.insertId;
         } finally {
             connection.release();
@@ -28,7 +29,7 @@ export class AccountService implements ICRUD<IAccount> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM `accounts` LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `streets` LIMIT ? OFFSET ?";
             const [categories] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
             return categories;
         } finally {
@@ -36,13 +37,12 @@ export class AccountService implements ICRUD<IAccount> {
         }
     }
 
-    public async update(acc: IAccount) {
+    public async update(city: IStreet) {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = 'UPDATE `accounts` SET `email`=?,`username`=?,`contact_details`=? WHERE id=?';
-
-            const [result] = await connection.execute<mysql.OkPacket>(query, [acc.email, acc.username, acc.contactDetails, acc.id]);
+            const query = "UPDATE `streets` SET `name`=?, `id_city`=? WHERE `streets`.id = ?";
+            const [result] = await connection.execute<mysql.OkPacket>(query, [city.name, city.idCity, city.id]);
             return result.affectedRows;
         } finally {
             connection.release();
@@ -53,7 +53,7 @@ export class AccountService implements ICRUD<IAccount> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "DELETE FROM `accounts` WHERE `accounts`.`id` = ?";
+            const query = "DELETE FROM `streets` WHERE `streets`.`id` = ?";
             const [result] = await connection.execute<mysql.OkPacket>(query, [id]);
             return result.affectedRows;
         } finally {
@@ -62,4 +62,4 @@ export class AccountService implements ICRUD<IAccount> {
     }
 }
 
-MySqlService.registerService(services.account, new AccountService());
+MySqlService.registerService(services.street, new StreetService());

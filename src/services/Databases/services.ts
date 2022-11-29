@@ -3,4 +3,9 @@ export enum services {
     category = "Categories",
     registrationRequest = "RegistrationRequests",
     account = "Accounts",
+    shop = "Shops",
+    country = "Countries",
+    city = "Cities",
+    street = "Streets",
+    address = "Addresses",
 }

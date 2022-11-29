@@ -4,7 +4,10 @@ import {services} from "../services/Databases/services";
 import {refineException} from "../exceptions/handler";
 import {RefinedException} from "../exceptions/handler/RefinedException";
 import {
-    validateRegisterUserData, validateResendVerifyEmail, validateUpdateRegistrationRequest, validateVerifyToken,
+    validateRegisterUserData,
+    validateResendVerifyEmail,
+    validateUpdateRegistrationRequest,
+    validateVerifyToken,
 } from "../validations/registrationRequest.validations";
 import {IRegisterData} from "../models/IRegisterData";
 import {Mailer} from "../services/Mailer";

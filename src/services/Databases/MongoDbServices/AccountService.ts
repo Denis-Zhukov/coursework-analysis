@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import {MongoDbService} from "../MongoDbService";
 import {services} from "../services"
 import {Accounts} from "./schemas/Accounts";
-import {RefinedException} from "../../../exceptions/handler/RefinedException";
 import {IAccount} from "../../../models/IAccount";
 import {Products} from "./schemas/Products";
 

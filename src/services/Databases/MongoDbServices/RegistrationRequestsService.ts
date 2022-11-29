@@ -6,7 +6,6 @@ import {IRegistrationRequests} from "../interfaces/IRegistrationRequests";
 import {IResendVerifyEmail} from "../../../models/IResendVerifyEmail";
 import {IRegisterData} from "../../../models/IRegisterData";
 import {RegistrationRequests} from "./schemas/RegistrationRequests";
-import {RowDataPacket} from "mysql2/promise";
 import {Accounts} from "./schemas/Accounts";
 
 

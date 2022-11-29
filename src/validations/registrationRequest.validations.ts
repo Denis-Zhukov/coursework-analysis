@@ -7,20 +7,6 @@ import {schemaId} from "./validationSchemas";
 
 
 export const validateRegisterUserData = (data: IRegisterData) => {
-    // const locationSchema = Joi.object({
-    //     country: Joi.string().min(s.varchar.minLength).max(s.varchar.maxLength).required(),
-    //     city: Joi.string().min(s.varchar.minLength).max(s.varchar.maxLength).required(),
-    //     street: Joi.string().min(s.varchar.minLength).max(s.varchar.maxLength).required(),
-    //     restOfAddress: Joi.string().min(s.varchar.minLength).max(s.varchar.maxLength).optional(),
-    // });
-    //
-    // const shopSchema = Joi.object({
-    //     shopName: Joi.string().min(s.varchar.minLength).max(s.varchar.maxLength).required(),
-    //     location: locationSchema.required(),
-    //     getOrders: Joi.string().uri().min(s.text.minLength).max(s.text.maxLength).required(),
-    //     getProducts: Joi.string().uri().min(s.text.minLength).max(s.text.maxLength).required(),
-    // });
-
     const schema = Joi.object({
         username: Joi.string().pattern(s.username.regex).min(s.username.minLength).max(s.username.maxLength).required().messages({
             "string.pattern.base": s.username.error,

@@ -16,10 +16,6 @@ export const client = {
 'password' can include letters, special symbols(@$!%*?&~_) and digits`, minLength: 8, maxLength: 255,
     },
 
-    shops: {
-        minElements: 1, maxElements: 10,
-    },
-
     varchar: {
         minLength: 1, maxLength: 255,
     },
@@ -32,6 +28,18 @@ export const client = {
         minLength: 1, maxLength: 500,
     },
 };
+
+export const shop = {
+    varchar: {
+        minLength: 1,
+        maxLength: 255,
+    },
+
+    text: {
+        minLength: 1,
+        maxLength: 1000,
+    }
+}
 
 export const category = {
     varchar: {
@@ -52,3 +60,14 @@ export const product = {
         minLength: 1, maxLength: 255,
     },
 };
+
+export const addresses = {
+    varchar: {
+        minLength: 1,
+        maxLength: 255,
+    },
+    text: {
+        minLength: 1,
+        maxLength: 1000,
+    }
+}
