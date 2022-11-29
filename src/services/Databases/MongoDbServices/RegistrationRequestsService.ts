@@ -6,6 +6,7 @@ import {IRegistrationRequests} from "../interfaces/IRegistrationRequests";
 import {IResendVerifyEmail} from "../../../models/IResendVerifyEmail";
 import {IRegisterData} from "../../../models/IRegisterData";
 import {RegistrationRequests} from "./schemas/RegistrationRequests";
+import {RowDataPacket} from "mysql2/promise";
 
 
 export class RegistrationRequestsService implements IRegistrationRequests {
@@ -67,6 +68,14 @@ export class RegistrationRequestsService implements IRegistrationRequests {
     public async get(count: number, offset: number) {
         await this.instance.getConnection();
         return RegistrationRequests.find().skip(offset).limit(count);
+    }
+
+    public async getById(id: number) {
+        await this.instance.getConnection();
+        return RegistrationRequests.findOne({_id: id});
+    }
+
+    public async acceptUser(id: number) {
     }
 
     public async update(data: IRegisterData) {

@@ -121,11 +121,14 @@ An email has been sent to ${data.email}. Confirm mail.`);
             const serivce = database.getService(services.registrationRequest) as IRegistrationRequests;
 
             const userInfo = (await serivce.getById(id)) as IRegisterData;
+            if (userInfo === null) res.status(400).send(`${id} hasn't been found`);
+
             const result = await serivce.delete(id);
+            if (result === 0) return res.status(400).send(`${id} has not been found`);
 
-            Mailer.sendUserAcceptance(userInfo.username, userInfo.email);
+            Mailer.sendUserRejection(userInfo.username, userInfo.email);
 
-            return res.send("User has been accepted")
+            return res.send("User has been rejected")
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));
         }

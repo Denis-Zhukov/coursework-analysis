@@ -84,13 +84,13 @@ export class RegistrationRequestsService implements IRegistrationRequests {
             const query = "SELECT * FROM `registration_requests` WHERE id=?";
             const [requests] = await connection.execute<RowDataPacket[]>(query, [id]);
 
-            const request = {
+            if (!requests.length) return null;
+
+            return {
                 ...requests[0],
                 hashPassword: requests[0]?.['password_hash'],
                 contactDetails: requests[0]?.['contact_details'],
             };
-
-            return request;
         } finally {
             connection.release();
         }
