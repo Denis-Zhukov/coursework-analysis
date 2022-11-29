@@ -86,18 +86,41 @@ export class RegistrationRequestsService implements IRegistrationRequests {
 
             if (!requests.length) return null;
 
-            return {
+            // @ts-ignore
+            const result: IRegisterData = {
                 ...requests[0],
-                hashPassword: requests[0]?.['password_hash'],
-                contactDetails: requests[0]?.['contact_details'],
+                passwordHash: String(requests[0]?.['password_hash']),
+                contactDetails: String(requests[0]?.['contact_details']),
             };
+
+            return result;
         } finally {
             connection.release();
         }
     }
 
     public async acceptUser(id: number) {
+        const connection = await this.pool.getConnection();
 
+        try {
+            const query = 'INSERT INTO `accounts`(`email`, `username`, `password_hash`, `contact_details`) VALUES (?,?,?,?)'
+
+            await connection.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
+            await connection.beginTransaction();
+
+            const user = await this.getById(id);
+            if (user === null) throw new RefinedException(`${id} hasn't been found`, 400);
+            await this.delete(id);
+            const [result] = await connection.execute<mysql.OkPacket>(query, [user.email, user.username, user.passwordHash, user.contactDetails]);
+
+            await connection.commit();
+            return result.insertId;
+        } catch (e) {
+            await connection.rollback();
+            throw e;
+        } finally {
+            connection.release();
+        }
     }
 
     public async update(data: IRegisterData) {

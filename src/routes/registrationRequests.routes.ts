@@ -32,6 +32,6 @@ registrationRequestsRouter.put("/update-registration-request", async (req, res) 
     await RegistrationRequestController.updateRegistrationRequest(req, res);
 });
 
-registrationRequestsRouter.delete("/delete-registration-request", async (req, res) => {
+registrationRequestsRouter.delete("/delete-registration-request/:id", async (req, res) => {
     await RegistrationRequestController.deleteRegistrationRequest(req, res);
 });

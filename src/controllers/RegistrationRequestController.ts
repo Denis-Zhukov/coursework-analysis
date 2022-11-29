@@ -48,7 +48,7 @@ An email has been sent to ${data.email}. Confirm mail.`);
             const service = database.getService(services.registrationRequest) as IRegistrationRequests;
             const result = await service.verifyEmail(token);
             if (result) return res.status(200).send("Email has been verified");
-            res.sendStatus(404);
+            return res.sendStatus(404);
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));
         }
@@ -102,7 +102,10 @@ An email has been sent to ${data.email}. Confirm mail.`);
             const serivce = database.getService(services.registrationRequest) as IRegistrationRequests;
 
             const userInfo = (await serivce.getById(id)) as IRegisterData;
+            if (userInfo === null) return res.status(400).send(`${id} hasn't been found`);
+
             const result = await serivce.acceptUser(id);
+            if (result < 1) return res.status(500).send(`Something went wrong. User hasn't been accepted`);
 
             Mailer.sendUserAcceptance(userInfo.username, userInfo.email);
 
@@ -121,7 +124,7 @@ An email has been sent to ${data.email}. Confirm mail.`);
             const serivce = database.getService(services.registrationRequest) as IRegistrationRequests;
 
             const userInfo = (await serivce.getById(id)) as IRegisterData;
-            if (userInfo === null) res.status(400).send(`${id} hasn't been found`);
+            if (userInfo === null) return res.status(400).send(`${id} hasn't been found`);
 
             const result = await serivce.delete(id);
             if (result === 0) return res.status(400).send(`${id} has not been found`);
@@ -150,7 +153,7 @@ An email has been sent to ${data.email}. Confirm mail.`);
     }
 
     public static async deleteRegistrationRequest(req: Request, res: Response) {
-        const {id} = req.body;
+        const id = (req.params.id as unknown) as Id;
         const {error} = validateId(id);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
 

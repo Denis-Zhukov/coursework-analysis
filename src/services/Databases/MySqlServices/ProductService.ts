@@ -35,10 +35,9 @@ export class ProductService implements ICRUD<IProduct> {
     public async add(product: IProduct) {
         const connection = await this.pool.getConnection();
 
-        await connection.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
-        await connection.beginTransaction();
-
         try {
+            await connection.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
+            await connection.beginTransaction();
             //add product info to table products
             let query = "INSERT INTO `products` (`name`, `description`) VALUES (?, ?)";
             const [result] = await connection.execute<mysql.OkPacket>(query, [product.name, product.description]);
