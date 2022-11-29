@@ -7,6 +7,7 @@ import {IResendVerifyEmail} from "../../../models/IResendVerifyEmail";
 import {IRegisterData} from "../../../models/IRegisterData";
 import {RegistrationRequests} from "./schemas/RegistrationRequests";
 import {RowDataPacket} from "mysql2/promise";
+import {Accounts} from "./schemas/Accounts";
 
 
 export class RegistrationRequestsService implements IRegistrationRequests {
@@ -75,7 +76,19 @@ export class RegistrationRequestsService implements IRegistrationRequests {
         return RegistrationRequests.findOne({_id: id});
     }
 
-    public async acceptUser(id: number) {
+    public async acceptUser(id: mongoose.Types.ObjectId) {
+        await this.instance.getConnection();
+        const user = await RegistrationRequests.findOne({_id: id}) as IRegisterData;
+        await this.delete(id);
+        const account = new Accounts({
+            username: user.username,
+            email: user.email,
+            passwordHash: user.passwordHash,
+            contactDetails: user.contactDetails
+        });
+        const result = await account.save();
+
+        return result["_id"];
     }
 
     public async update(data: IRegisterData) {

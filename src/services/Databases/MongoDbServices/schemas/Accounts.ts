@@ -22,14 +22,6 @@ const schema = new Schema({
         type: String,
         required: true,
     },
-    token: {
-        type: String,
-        required: true,
-    },
-    confirmed: {
-        type: Boolean,
-        default: false
-    },
 }, {versionKey: false});
 
-export const RegistrationRequests = mongoose.model("RegistrationRequests", schema, "registration_requests");
+export const Accounts = mongoose.model("Accounts", schema, "accounts");
