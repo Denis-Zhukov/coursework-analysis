@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
 import {IDatabaseInstance, IDatabaseStatic} from "./IDatabase";
 import {ICRUD} from "./interfaces/ICRUD";
-import {staticImplement} from "../../decorators/staticImplement";
+import {staticImplement} from "./decorators/staticImplement";
 
 
 @staticImplement<IDatabaseStatic>()

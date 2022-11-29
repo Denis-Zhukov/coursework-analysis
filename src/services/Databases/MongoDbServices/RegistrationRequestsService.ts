@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 import {MongoDbService} from "../MongoDbService";
 import {services} from "../services";
 import {RefinedException} from "../../../exceptions/handler/RefinedException";
-import {IClient} from "../interfaces/IClient";
+import {IRegistrationRequests} from "../interfaces/IRegistrationRequests";
 import {IResendVerifyEmail} from "../../../models/IResendVerifyEmail";
 import {IRegisterData} from "../../../models/IRegisterData";
 import {RegistrationRequests} from "./schemas/RegistrationRequests";
 
 
-export class RegistrationRequestsService implements IClient {
+export class RegistrationRequestsService implements IRegistrationRequests {
     private instance: MongoDbService;
 
     constructor() {

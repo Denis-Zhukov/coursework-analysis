@@ -9,8 +9,8 @@ import {
 import {IRegisterData} from "../models/IRegisterData";
 import {Mailer} from "../services/Mailer";
 import {Security} from "../services/Security";
-import {IClient} from "../services/Databases/interfaces/IClient";
-import {QueryParam} from "../types/types";
+import {IRegistrationRequests} from "../services/Databases/interfaces/IRegistrationRequests";
+import {Id, QueryParam} from "../types/types";
 import {validateId, validateLimitStart} from "../validations/general.validations";
 import {IResendVerifyEmail} from "../models/IResendVerifyEmail";
 
@@ -45,7 +45,7 @@ An email has been sent to ${data.email}. Confirm mail.`);
         if (error) return res.sendStatus(404);
 
         try {
-            const service = database.getService(services.registrationRequest) as IClient;
+            const service = database.getService(services.registrationRequest) as IRegistrationRequests;
             const result = await service.verifyEmail(token);
             if (result) return res.status(200).send("Email has been verified");
             res.sendStatus(404);
@@ -62,7 +62,7 @@ An email has been sent to ${data.email}. Confirm mail.`);
 
         try {
             data.token = Security.generateUuid();
-            const service = database.getService(services.registrationRequest) as IClient;
+            const service = database.getService(services.registrationRequest) as IRegistrationRequests;
             let result = await service.resendVerifyEmail(data);
 
             if (!result) throw new Error("Token for verify email hasn't been updated");
@@ -90,6 +90,44 @@ An email has been sent to ${data.email}. Confirm mail.`);
             return res.send(result);
         } catch (e: any) {
             throw refineException(e);
+        }
+    }
+
+    public static async acceptRequest(req: Request, res: Response) {
+        const id = (req.params.id as unknown) as Id;
+        const {error} = validateId(id);
+        if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
+
+        try {
+            const serivce = database.getService(services.registrationRequest) as IRegistrationRequests;
+
+            const userInfo = (await serivce.getById(id)) as IRegisterData;
+            const result = await serivce.acceptUser(id);
+
+            Mailer.sendUserAcceptance(userInfo.username, userInfo.email);
+
+            return res.send("User has been accepted")
+        } catch (e: any) {
+            throw (e instanceof RefinedException ? e : refineException(e));
+        }
+    }
+
+    public static async rejectRequest(req: Request, res: Response) {
+        const id = (req.params.id as unknown) as Id;
+        const {error} = validateId(id);
+        if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
+
+        try {
+            const serivce = database.getService(services.registrationRequest) as IRegistrationRequests;
+
+            const userInfo = (await serivce.getById(id)) as IRegisterData;
+            const result = await serivce.delete(id);
+
+            Mailer.sendUserAcceptance(userInfo.username, userInfo.email);
+
+            return res.send("User has been accepted")
+        } catch (e: any) {
+            throw (e instanceof RefinedException ? e : refineException(e));
         }
     }
 

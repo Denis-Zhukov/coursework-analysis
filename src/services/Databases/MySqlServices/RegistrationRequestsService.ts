@@ -3,11 +3,11 @@ import {MySqlService} from "../MySqlService";
 import {services} from "../services";
 import {IRegisterData} from "../../../models/IRegisterData";
 import {RefinedException} from "../../../exceptions/handler/RefinedException";
-import {IClient} from "../interfaces/IClient";
+import {IRegistrationRequests} from "../interfaces/IRegistrationRequests";
 import {IResendVerifyEmail} from "../../../models/IResendVerifyEmail";
 
 
-export class RegistrationRequestsService implements IClient {
+export class RegistrationRequestsService implements IRegistrationRequests {
     private pool: mysql.Pool;
 
     constructor() {
@@ -70,11 +70,34 @@ export class RegistrationRequestsService implements IClient {
 
         try {
             const query = "SELECT * FROM `registration_requests` LIMIT ? OFFSET ?";
-            const [categories] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
-            return categories;
+            const [requests] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
+            return requests;
         } finally {
             connection.release();
         }
+    }
+
+    public async getById(id: number) {
+        const connection = await this.pool.getConnection();
+
+        try {
+            const query = "SELECT * FROM `registration_requests` WHERE id=?";
+            const [requests] = await connection.execute<RowDataPacket[]>(query, [id]);
+
+            const request = {
+                ...requests[0],
+                hashPassword: requests[0]?.['password_hash'],
+                contactDetails: requests[0]?.['contact_details'],
+            };
+
+            return request;
+        } finally {
+            connection.release();
+        }
+    }
+
+    public async acceptUser(id: number) {
+
     }
 
     public async update(data: IRegisterData) {
