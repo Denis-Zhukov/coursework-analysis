@@ -8,16 +8,18 @@ import {countryRouter} from "./AdressRoutes/countries.routes";
 import {cityRouter} from "./AdressRoutes/cities.routes";
 import {streetRouter} from "./AdressRoutes/streets.routes";
 import {addressRouter} from "./AdressRoutes/addresses.routes";
+import {authRouter} from "./auth.routes";
 
 const routers = Router();
-routers.use(productRouter);
-routers.use(categoryRouter);
-routers.use(registrationRequestsRouter);
-routers.use(accountRouter);
-routers.use(shopRouter);
+routers.use("/products", productRouter);
+routers.use("/categories", categoryRouter);
+routers.use("/registration-requests", registrationRequestsRouter);
+routers.use("/accounts", accountRouter);
+routers.use("/shops", shopRouter);
 routers.use("/countries", countryRouter);
 routers.use("/cities", cityRouter);
 routers.use("/streets", streetRouter);
 routers.use("/addresses", addressRouter);
+routers.use("/auth", authRouter);
 
 export default routers;

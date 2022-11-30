@@ -22,4 +22,4 @@ const schema = new Schema({
     }
 }, {versionKey: false});
 
-export const Shops = mongoose.model("Shops", schema, "Shops");
+export const Shops = mongoose.model("Shops", schema, "shops");

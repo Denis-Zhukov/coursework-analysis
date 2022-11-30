@@ -22,6 +22,13 @@ const schema = new Schema({
         type: String,
         required: true,
     },
+    shops: {
+        type: [{
+            type: mongoose.Types.ObjectId,
+            ref: "Shops"
+        }],
+        default: []
+    }
 }, {versionKey: false});
 
 export const Accounts = mongoose.model("Accounts", schema, "accounts");

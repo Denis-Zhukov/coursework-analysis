@@ -14,3 +14,16 @@ export const validateShop = (shop: IShop) => {
 
     return shopSchema.validate(shop, {abortEarly: false})
 }
+
+export const validateUserShop = (shop: IShop) => {
+    const shopSchema = Joi.object({
+        id: Joi.alternatives().try(schemaId).optional(),
+        accountId: Joi.alternatives().try(schemaId).required(),
+        name: Joi.string().min(s.varchar.minLength).max(s.varchar.maxLength).required(),
+        address: Joi.alternatives().try(schemaId).required(),
+        getOrders: Joi.string().uri().min(s.text.minLength).max(s.text.maxLength).required(),
+        getProducts: Joi.string().uri().min(s.text.minLength).max(s.text.maxLength).required(),
+    });
+
+    return shopSchema.validate(shop, {abortEarly: false})
+}

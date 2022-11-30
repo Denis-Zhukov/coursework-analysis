@@ -6,3 +6,4 @@ import "./Addresses/CountryService";
 import "./Addresses/CityService";
 import "./Addresses/StreetService";
 import "./Addresses/AddressService";
+import "./ShopService";

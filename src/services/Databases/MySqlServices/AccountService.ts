@@ -1,11 +1,11 @@
 import mysql, {RowDataPacket} from "mysql2/promise";
 import {MySqlService} from "../MySqlService";
-import {ICRUD} from "../interfaces/ICRUD";
 import {services} from "../services";
 import {IAccount} from "../../../models/IAccount";
+import {IAccountService} from "../interfaces/IAccountService";
 
 
-export class AccountService implements ICRUD<IAccount> {
+export class AccountService implements IAccountService {
     private pool: mysql.Pool;
 
     constructor() {
@@ -31,6 +31,18 @@ export class AccountService implements ICRUD<IAccount> {
             const query = "SELECT * FROM `accounts` LIMIT ? OFFSET ?";
             const [categories] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
             return categories;
+        } finally {
+            connection.release();
+        }
+    }
+
+    public async getByUsername(username: string) {
+        const connection = await this.pool.getConnection();
+
+        try {
+            const query = "SELECT id, username, password_hash as passwordHash FROM `accounts` WHERE username=?";
+            const [user] = await connection.execute<RowDataPacket[]>(query, [username]);
+            return user?.[0];
         } finally {
             connection.release();
         }

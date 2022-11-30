@@ -1,13 +1,13 @@
-import {ICRUD} from "../interfaces/ICRUD";
 import mongoose from "mongoose";
 import {MongoDbService} from "../MongoDbService";
 import {services} from "../services"
 import {Accounts} from "./schemas/Accounts";
 import {IAccount} from "../../../models/IAccount";
 import {Products} from "./schemas/Products";
+import {IAccountService} from "../interfaces/IAccountService";
 
 
-export class AccountService implements ICRUD<IAccount> {
+export class AccountService implements IAccountService {
     private instance: MongoDbService;
 
     constructor() {
@@ -25,6 +25,11 @@ export class AccountService implements ICRUD<IAccount> {
     public async get(count: number, offset: number) {
         await this.instance.getConnection();
         return Accounts.find().skip(offset).limit(count);
+    }
+
+    public async getByUsername(username: string) {
+        await this.instance.getConnection();
+        return (await Accounts.find({username}) as any)?.[0];
     }
 
     public async update(acc: IAccount) {
