@@ -6,18 +6,18 @@ import {validateId, validateLimitStart} from "../validations/general.validations
 import {refineException} from "../exceptions/handler";
 import {RefinedException} from "../exceptions/handler/RefinedException";
 import {IShop} from "../models/IShop";
-import {validateShopWithId, validateShopWithOutId} from "../validations/shop.validations";
+import {validateShop} from "../validations/shop.validations";
+import {logger} from "../app";
 
 
-export class CategoryController {
+export class ShopController {
     private static defaultCount: number = 10;
     private static maxCount: number = 50;
 
     public static async addShop(req: Request, res: Response) {
         let shop = req.body as IShop;
-        const {error} = validateShopWithOutId(shop);
+        const {error} = validateShop(shop);
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
-
 
         try {
             const result = await database.getService(services.shop).add(shop);
@@ -45,11 +45,18 @@ export class CategoryController {
 
     public static async updateShop(req: Request, res: Response) {
         const shop = req.body as IShop;
-        let {error} = validateShopWithId(shop);
-        if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
+
+        let errorResponse = "";
+        let {error} = validateId(shop.id);
+        error && (errorResponse += error.details.map(d => d.message).join("\n") + "\n");
+        error = validateShop(shop).error;
+        error && (errorResponse += error.details.map(d => d.message).join("\n"));
+        if (errorResponse) return res.status(400).send(errorResponse);
 
         try {
-
+            const result = await database.getService(services.shop).update(shop);
+            if (result === 0) return res.status(400).send(`${shop.id} has not been found`);
+            return res.send(`Shop has been updated`);
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));
         }
@@ -61,7 +68,9 @@ export class CategoryController {
         if (error) return res.status(400).send(error.details.map(d => d.message).join("\n"));
 
         try {
-
+            const result = await database.getService(services.shop).delete(id);
+            if (result === 0) return res.status(400).send(`${id} has not been found`);
+            return res.send(`${id} has been deleted`);
         } catch (e: any) {
             throw refineException(e);
         }

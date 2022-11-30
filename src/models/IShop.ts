@@ -2,8 +2,8 @@ import {Id} from "../types/types";
 
 export interface IShop {
     id: Id;
-    shopName: string;
-    location: ILocation;
+    name: string;
+    address: ILocation;
     getProducts: string;
     getOrders: string;
 }
