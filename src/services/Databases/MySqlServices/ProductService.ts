@@ -65,7 +65,7 @@ export class ProductService implements ICRUD<IProduct> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM `products_info` LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `products_info` ORDER BY id LIMIT ? OFFSET ?";
             const [rows] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
             return rows.map(prod => ({...prod, categories: prod.categories.split(';')}));
         } finally {

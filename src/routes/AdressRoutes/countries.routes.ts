@@ -1,7 +1,10 @@
 import {Router} from "express";
 import {CountryController} from "../../controllers/AdressControllers/CountryController";
+import {onlyAdmin} from "../../middlewares";
+import {addressRouter} from "./addresses.routes";
 
 export const countryRouter = Router();
+addressRouter.use(...onlyAdmin());
 
 countryRouter.post("/add", async (req, res) => {
     await CountryController.addCountry(req, res);

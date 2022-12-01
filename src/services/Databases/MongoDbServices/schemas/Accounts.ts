@@ -28,6 +28,10 @@ const schema = new Schema({
             ref: "Shops"
         }],
         default: []
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 }, {versionKey: false});
 

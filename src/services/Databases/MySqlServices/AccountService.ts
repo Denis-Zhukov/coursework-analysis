@@ -28,7 +28,7 @@ export class AccountService implements IAccountService {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM `accounts` LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `accounts` ORDER BY id LIMIT ? OFFSET ?";
             const [categories] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
             return categories;
         } finally {
@@ -40,7 +40,7 @@ export class AccountService implements IAccountService {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT id, username, password_hash as passwordHash FROM `accounts` WHERE username=?";
+            const query = "SELECT id, username, password_hash as passwordHash, isAdmin FROM `accounts` WHERE username=?";
             const [user] = await connection.execute<RowDataPacket[]>(query, [username]);
             return user?.[0];
         } finally {

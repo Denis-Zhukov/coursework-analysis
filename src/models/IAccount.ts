@@ -7,4 +7,5 @@ export interface IAccount {
     passwordHash: string;
     email: string;
     contactDetails: string;
+    isAdmin: boolean;
 }

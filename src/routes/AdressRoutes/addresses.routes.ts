@@ -1,7 +1,9 @@
 import {Router} from "express";
 import {AddressController} from "../../controllers/AdressControllers/AddressController";
+import {onlyAdmin} from "../../middlewares";
 
 export const addressRouter = Router();
+addressRouter.use(...onlyAdmin());
 
 addressRouter.post("/add", async (req, res) => {
     await AddressController.addAddress(req, res);

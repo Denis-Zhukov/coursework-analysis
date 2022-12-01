@@ -1,7 +1,10 @@
 import {Router} from "express";
 import {StreetController} from "../../controllers/AdressControllers/StreetController";
+import {onlyAdmin} from "../../middlewares";
+import {addressRouter} from "./addresses.routes";
 
 export const streetRouter = Router();
+addressRouter.use(...onlyAdmin());
 
 streetRouter.post("/add", async (req, res) => {
     await StreetController.addStreet(req, res);

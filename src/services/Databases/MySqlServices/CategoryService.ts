@@ -29,7 +29,7 @@ export class CategoryService implements ICRUD<ICategory> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM `categories` LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `categories` ORDER BY id LIMIT ? OFFSET ?";
             const [categories] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
             return categories;
         } finally {

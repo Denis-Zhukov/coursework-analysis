@@ -52,7 +52,10 @@ export class ShopController {
         const offset = Number(_start || 0);
 
         try {
-            const result = await database.getService(services.shop).get(count, offset);
+            const service = database.getService(services.shop) as IShopService;
+            const result = await service.get(count, offset);
+            const countShops = await service.count();
+            res.setHeader("X-Total-Count", countShops);
             return res.send(result);
         } catch (e: any) {
             throw refineException(e);

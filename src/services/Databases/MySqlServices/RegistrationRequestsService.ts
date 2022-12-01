@@ -79,7 +79,7 @@ export class RegistrationRequestsService implements IRegistrationRequests {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM `registration_requests` LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `registration_requests` ORDER BY id LIMIT ? OFFSET ?";
             const [requests] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
             return requests;
         } finally {

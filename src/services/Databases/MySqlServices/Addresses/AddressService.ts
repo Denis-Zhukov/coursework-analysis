@@ -28,7 +28,7 @@ export class AddressService implements ICRUD<IAddress> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM `addresses` LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `addresses` ORDER BY id LIMIT ? OFFSET ?";
             const [categories] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
             return categories;
         } finally {

@@ -6,6 +6,7 @@ import log4js from "log4js";
 import routers from "./routes";
 import cookieParser from "cookie-parser";
 import {RefinedException} from "./exceptions/handler/RefinedException";
+import {Security} from "./services/Security";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ export const logger = log4js.getLogger();
 logger.level = process.env?.LOG_LEVEL || "debug";
 
 export const app = express();
+
 
 // MIDDLEWARES
 app.use(express.json());

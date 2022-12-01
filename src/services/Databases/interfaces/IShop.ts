@@ -10,4 +10,6 @@ export interface IShopService extends ICRUD<IUserShop> {
     updateUserShop(userShop: IUserShop): any;
 
     deleteUserShop(id: Id, idOwner: Id): any;
+
+    count(): any;
 }

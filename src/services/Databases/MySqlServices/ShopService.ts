@@ -52,7 +52,7 @@ export class ShopService implements IShopService {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM `shops` LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `shops` ORDER BY id LIMIT ? OFFSET ?";
             const [categories] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
             return categories;
         } finally {
@@ -64,7 +64,7 @@ export class ShopService implements IShopService {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM `accounts_shop_info` WHERE id_owner = ? LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `accounts_shop_info` WHERE id_owner = ? ORDER BY id_shop LIMIT ? OFFSET ?";
             const [categories] = await connection.execute<RowDataPacket[]>(query, [id, count, offset]);
             return categories;
         } finally {
@@ -129,6 +129,18 @@ export class ShopService implements IShopService {
             query = "DELETE FROM `shops` WHERE `shops`.`id` = ?";
             const [result] = await connection.execute<mysql.OkPacket>(query, [id]);
             return result.affectedRows;
+        } finally {
+            connection.release();
+        }
+    }
+
+    public async count() {
+        const connection = await this.pool.getConnection();
+
+        try {
+            let query = "SELECT COUNT(*) as count FROM `shops`";
+            const [result] = await connection.execute<mysql.RowDataPacket[]>(query);
+            return result[0].count;
         } finally {
             connection.release();
         }

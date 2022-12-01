@@ -25,16 +25,16 @@ export class Security {
         return v4();
     }
 
-    public static login(accountId: Id) {
-        const token = jwt.sign(
+    public static login(accountId: Id, isAdmin: boolean) {
+        return jwt.sign(
             {
-                accountId
+                accountId,
+                isAdmin
             },
             Security.keyVerify,
             {
                 expiresIn: 60 * 60 * 365
             }
         );
-        return token;
     }
 }

@@ -26,7 +26,7 @@ export class AuthController {
             if (!(await Security.compareHashAndPassword(data.password, account.passwordHash)))
                 return res.status(403).send("Incorrect password");
 
-            return res.status(200).json({verifyToken: Security.login(account?.id)});
+            return res.status(200).json({verifyToken: Security.login(account.id, account.isAdmin)});
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));
         }

@@ -9,6 +9,7 @@ import {cityRouter} from "./AdressRoutes/cities.routes";
 import {streetRouter} from "./AdressRoutes/streets.routes";
 import {addressRouter} from "./AdressRoutes/addresses.routes";
 import {authRouter} from "./auth.routes";
+import {eventer} from "../services/Eventer";
 
 const routers = Router();
 routers.use("/products", productRouter);
@@ -21,5 +22,7 @@ routers.use("/cities", cityRouter);
 routers.use("/streets", streetRouter);
 routers.use("/addresses", addressRouter);
 routers.use("/auth", authRouter);
+
+routers.get("/test", eventer)
 
 export default routers;

@@ -29,7 +29,7 @@ export class CityService implements ICRUD<ICountry> {
         const connection = await this.pool.getConnection();
 
         try {
-            const query = "SELECT * FROM `cities` LIMIT ? OFFSET ?";
+            const query = "SELECT * FROM `cities` ORDER BY id LIMIT ? OFFSET ?";
             const [categories] = await connection.execute<RowDataPacket[]>(query, [count, offset]);
             return categories;
         } finally {
