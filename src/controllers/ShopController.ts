@@ -9,6 +9,8 @@ import {IShop} from "../models/IShop";
 import {validateShop, validateUserShop} from "../validations/shop.validations";
 import {IUserShop} from "../models/IUserShop";
 import {IShopService} from "../services/Databases/interfaces/IShop";
+import {CurrentPricesController} from "./CurrentPricesController";
+import {logger} from "../app";
 
 
 export class ShopController {
@@ -37,6 +39,12 @@ export class ShopController {
         try {
             const service = database.getService(services.shop) as IShopService;
             const result = await service.addUserShop(shop);
+            CurrentPricesController.loadPrices(shop.getProducts).catch(err => {
+                logger.error(err);
+            });
+            CurrentPricesController.loadOrders(shop.getOrders).catch(err => {
+                logger.error(err);
+            })
             return res.status(201).json(result);
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));
