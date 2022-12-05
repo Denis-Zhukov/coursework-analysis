@@ -23,6 +23,6 @@ routers.use("/streets", streetRouter);
 routers.use("/addresses", addressRouter);
 routers.use("/auth", authRouter);
 
-routers.get("/test", eventer)
+routers.get("/test", eventer);
 
 export default routers;

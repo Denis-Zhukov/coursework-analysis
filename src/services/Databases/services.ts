@@ -8,4 +8,5 @@ export enum services {
     city = "Cities",
     street = "Streets",
     address = "Addresses",
+    currentPrices = "CurrentPrices",
 }

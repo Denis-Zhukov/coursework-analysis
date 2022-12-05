@@ -24,6 +24,9 @@ export class ShopController {
 
         try {
             const result = await database.getService(services.shop).add(shop);
+            await CurrentPricesController.loadPrices(shop.id, shop.getProducts).catch(err => {
+                logger.error(err);
+            });
             return res.status(201).json(result);
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));
@@ -39,12 +42,9 @@ export class ShopController {
         try {
             const service = database.getService(services.shop) as IShopService;
             const result = await service.addUserShop(shop);
-            CurrentPricesController.loadPrices(shop.getProducts).catch(err => {
+            await CurrentPricesController.loadPrices(result, shop.getProducts).catch(err => {
                 logger.error(err);
             });
-            CurrentPricesController.loadOrders(shop.getOrders).catch(err => {
-                logger.error(err);
-            })
             return res.status(201).json(result);
         } catch (e: any) {
             throw (e instanceof RefinedException ? e : refineException(e));

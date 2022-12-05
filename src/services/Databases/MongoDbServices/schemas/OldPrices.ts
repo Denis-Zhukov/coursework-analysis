@@ -14,4 +14,4 @@ const schema = new Schema({
     },
 }, {versionKey: false});
 
-export const CurrentPrices = mongoose.model("CurrentPrices", schema, "CurrentPrices");
+export const OldPrices = mongoose.model("OldPrices", schema, "OldPrices");
